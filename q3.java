@@ -1,175 +1,216 @@
 import java.util.*;
 import javax.swing.*;
-import java.awt.event.*;
 import java.awt.*;
-
-class drawing extends Canvas{
-    public void paint(Graphics g) {
-        // 1st rows
-        g.drawRect(10,10,120,160);
-        g.drawRect(130,10,120,160);
+import java.awt.event.*;  
 
 
-        // 2nd rows
-        g.drawRect(10,170,120,160);
-        g.drawRect(130,170,120,160);
-        g.drawRect(250,170,120,160);
-
-        // 3rd rows
-        g.drawRect(10,330,120,160);
-        g.drawRect(130,330,120,160);
-        g.drawRect(250,330,120,160);
-
+class DrawLine extends JPanel {
+    int l ;
+    DrawLine(int n){
+        l = n ;
+    }
+    public  void paintComponent(Graphics g) {
+        for(int i=0; i<=l; i++){
+            g.drawLine(((500/l)*i), 0, ((500/l)*i), 500);
+            g.drawLine(0, ((500/l)*i), 500, ((500/l)*i));
+        }
+        //vertical line
+       //g.drawLine(l, 0, l, 500);
+    
+        //horizontal line
+       //g.drawLine(0, l, 500, l);
+    
     }
 }
+
 public class q3 implements MouseListener{
-    public static String board [][] = {{"A","B","C"},{"D","E","F"},{"G","H","I"}} ;
-    public JFrame f;
+    public String[][] board ;
+    public int n;
+    public String player ;
+    public JFrame table;
+    public int count = 0;
+  
     public static void main(String[] arg){
         q3 j = new q3();
         j.setup();
+        //setsize_board();
+        //Switch_position();   
     }
-
     public void setup(){
-        f =new JFrame("XO_Game");
-        drawing d = new drawing();
-        // l_0
-        JLabel l_0 = new JLabel();
-        l_0.setBounds(70,40,110,120);
-        l_0.setFont(new Font("Sample glyphs",Font.BOLD, 90));
-
-        // l_1
-        JLabel l_1 = new JLabel();
-        l_1.setBounds(225,40,110,120);
-        l_1.setFont(new Font("Sample glyphs",Font.BOLD, 90));
-
-        // l_2
-        JLabel l_2 = new JLabel();
-        l_2.setBounds(365,40,110,120);
-        l_2.setFont(new Font("Sample glyphs",Font.BOLD, 90));
-
-        // l_3
-        JLabel l_3 = new JLabel();
-        l_3.setBounds(70,200,90,100);
-        l_3.setFont(new Font("Sample glyphs",Font.BOLD, 90));
-
-        // l_4
-        JLabel l_4 = new JLabel();
-        l_4.setBounds(225,200,90,100);
-        l_4.setFont(new Font("Sample glyphs",Font.BOLD, 90));
-
-        // l_5
-        JLabel l_5 = new JLabel();
-        l_5.setBounds(365,200,90,100);
-        l_5.setFont(new Font("Sample glyphs",Font.BOLD, 90));
-
-        // l_6
-        JLabel l_6 = new JLabel();
-        l_6.setBounds(70,360,90,100);
-        l_6.setFont(new Font("Sample glyphs",Font.BOLD, 90));
-
-        // l_7
-        JLabel l_7 = new JLabel();
-        l_7.setBounds(225,360,90,100);
-        l_7.setFont(new Font("Sample glyphs",Font.BOLD, 90));
-
-        // l_8
-        JLabel l_8 = new JLabel();
-        l_8.setBounds(365,360,90,100);
-        l_8.setFont(new Font("Sample glyphs",Font.BOLD, 90));
-
-        f.add(l_0);f.add(l_1);f.add(l_2);;
-        f.add(l_3);f.add(l_4);f.add(l_5);
-        f.add(l_6);f.add(l_7);f.add(l_8);;
-
-        f.addMouseListener(this);
-
-        f.add(d);
-        f.setSize(500,500);
-        f.setVisible(true);
-        f.setLayout(null);
-        f.setResizable(false);
-        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        while(true){
-            l_0.setText(board[0][0]);l_1.setText(board[0][1]);l_2.setText(board[0][2]);;
-            l_3.setText(board[1][0]);l_4.setText(board[1][1]);l_5.setText(board[1][2]);
-            l_6.setText(board[2][0]);l_7.setText(board[2][1]);l_8.setText(board[2][2]);
-        }
+        JFrame set = new JFrame("setsize_board");            
+        JButton built = new JButton("Built");
+        built.setBounds(210, 45, 75, 40);  
+        JTextField inp=new JTextField();
+        inp.setBounds(115, 50, 90,30);
+        inp.setFont(new Font("Sample glyphs",Font.BOLD, 15));      
+        JLabel Text = new JLabel("Enter size:");
+        Text.setFont(new Font("Sample glyphs",Font.BOLD, 20));
+        Text.setBounds(10, 40, 100, 50);
+        set.add(Text);
+        set.add(built);
+        set.add(inp);    
+        set.setSize(300,150);    
+        set.setLayout(null);    
+        set.setVisible(true);
+        built.addActionListener(new ActionListener(){  
+            public void actionPerformed(ActionEvent e){ 
+                String size = inp.getText();  
+                n = Integer.parseInt(size);
+                set.setVisible(false);
+                board = new String[n][n];
+                for(int i=0; i<n; i++){
+                    for(int j=0; j<n; j++){
+                        board [i][j] = String.valueOf(i) + String.valueOf(j);
+                    }
+                } 
+                boardbuilt();
+            }  
+        });
     }
-
-    public void mouseClicked(MouseEvent ev) {
-        String temp = "X";
-        String player = "X" ; 
-        int mY = ev.getX() / 160;
-        int mX = ev.getY() / 160;
-        try{
-            if(mX+1 <= 2 && board[mX+1][mY].equals(" ")){
-                temp = board[mX][mY];
-                board[mX][mY] = board[mX+1][mY];
-                board[mX+1][mY] = temp;
+    public void boardbuilt(){
+        table = new JFrame("setsize_board");
+        table.setVisible(true);
+        table.setSize(500,530);
+        JLabel[][] label = new JLabel[n][n];
+        for(int i=0; i<n; i++){
+            for(int j=0; j<n; j++){     
+            label[i][j] = new JLabel();
+            label[i][j].setText("  " + board[i][j]);
+            label[i][j].setBounds(((500/n)*j), ((500/n)*i), 500/n, 500/n);
+            label[i][j].setFont(new Font("Sample glyphs",Font.BOLD, 30));
+            table.add(label[i][j]);
             }
-            else if(mX-1 >= 0 && board[mX-1][mY].equals(" ")){
-                temp = board[mX][mY];
-                board[mX][mY] = board[mX-1][mY];
-                board[mX-1][mY] = temp;
-            }
-
-            else if(mY+1 <= 3 && board[mX][mY+1].equals(" ")){
-                temp = board[mX][mY];
-                board[mX][mY] = board[mX][mY+1];
-                board[mX][mY+1] = temp;
-            }
-
-            else if(mY-1 >= 0 && board[mX][mY-1].equals(" ")){
-                temp = board[mX][mY];
-                board[mX][mY] = board[mX][mY-1];
-                board[mX][mY-1] = temp;
-            }
-            if(check_winner() == true){
-                f.setVisible(false);
+        }
+        DrawLine panel = new DrawLine(n);
+        panel.addMouseListener(this);
+        table.add(panel);   
+        if(check_winner()==true){
+            if(count%2 == 0){
+                table.setVisible(false);
                 JFrame winner = new JFrame("Sorting_Game");
-                JLabel lwin = new JLabel(" You Win!");
+                JLabel lwin = new JLabel("   O Win!");
                 lwin.setBounds(400,250,100,100);
                 lwin.setFont(new Font("Sample glyphs",Font.BOLD, 90));
                 winner.setVisible(true);
                 winner.add(lwin);
-                winner.setSize(500,500);
+                winner.setSize(600,600);
                 winner.setResizable(false);
+                winner.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            }else if(count%2 == 1){
+                table.setVisible(false);
+                JFrame winner = new JFrame("Sorting_Game");
+                JLabel lwin = new JLabel("   X Win!");
+                lwin.setBounds(400,250,100,100);
+                lwin.setFont(new Font("Sample glyphs",Font.BOLD, 90));
+                winner.setVisible(true);
+                winner.add(lwin);
+                winner.setSize(600,600);
+                winner.setResizable(false); 
+                winner.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             }
-
-        }
-
-        catch(Exception e){
-
-        }
-
-
+        } 
+        
     }
 
-    @Override
-    public void mousePressed(MouseEvent mouseEvent) {
+    public void mouseClicked(MouseEvent ev) {
+        int mX = ev.getX() / (500/n);
+        int mY = ev.getY() / (500/n);
+        int endcount = n*n;
+        System.out.print(mX);
+        System.out.print(mY);
+        if(count == endcount){
+            table.setVisible(false);
+            JFrame winner = new JFrame("Sorting_Game");
+            JLabel lwin = new JLabel(" X Win!");
+            lwin.setBounds(400,250,100,100);
+            lwin.setFont(new Font("Sample glyphs",Font.BOLD, 90));
+            winner.setVisible(true);
+            winner.add(lwin);
+            winner.setSize(500,500);
+            winner.setResizable(false);
+        }         
+        try{
+            String pre_addpo = String.valueOf(mY) + String.valueOf(mX);
+            if(count%2 == 0 && board[mY][mX].equals(pre_addpo)){
+                board[mY][mX] = "X" ;
+                count++ ;
+                table.setVisible(false);
+                boardbuilt();
+                
+            }else if(count%2 == 1 && board[mY][mX].equals(pre_addpo)){
+                board[mY][mX] = "O" ;
+                count++ ;
+                table.setVisible(false);
+                boardbuilt();
+            }
+        }catch(Exception e){
 
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent mouseEvent) {
-
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent mouseEvent) {
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {}
-    public static boolean check_winner(){
-        if(board[0][0] == board [0][1] && board [0][1] == board [0][2] || board[1][0] == board [1][1] && board [1][1] == board [1][2] || board[2][0] == board [2][1] && board [2][1] == board [2][2] || board[0][0] == board [1][0] && board [1][0] == board [2][0] || board[0][1] == board [1][1] && board [1][1] == board [2][1] || board[0][2] == board [1][2] && board [1][2] == board [2][2] || board[0][0] == board [1][1] && board [1][1] == board [2][2] || board[0][2] == board [1][1] && board [1][1] == board [2][0]) {
-            return true;
         }
-        else{
-            return false;
+    
+    }   
+    
+        
+    
+    public boolean check_winner(){
+        String[] refX = new String[n];
+        String[] refO = new String[n];
+        String[] boardcheck = new String[n];
+        for(int i=0; i<n; i++){
+            refX[i] = "X" ;
+            refO[i] = "O" ;
         }
+        for(int i=0; i<n; i++){
+            boardcheck = new String[n];
+            for(int j=0; j<n; j++){
+                boardcheck[j] = board[i][j];    
+            }   
+            if(Arrays.deepEquals(boardcheck,refX) || Arrays.deepEquals(boardcheck,refO)){
+                return true;
+            }    
+        }
+        for(int i=0; i<n; i++){
+            boardcheck = new String[n];
+            for(int j=0; j<n; j++){
+                boardcheck[j] = board[j][i];    
+            }   
+            if(Arrays.deepEquals(boardcheck,refX) || Arrays.deepEquals(boardcheck,refO)){
+                return true;
+            }   
+        }
+        boardcheck = new String[n];
+        for(int i=0; i<n; i++){
+            boardcheck[i] = board[i][i];
+            if(Arrays.deepEquals(boardcheck,refX) || Arrays.deepEquals(boardcheck,refO)){
+                return true;
+            }
+        }
+        boardcheck = new String[n];
+        for(int i=0; i<n; i++){
+            boardcheck[i] = board[i][(n-1-i)];
+            if(Arrays.deepEquals(boardcheck,refX) || Arrays.deepEquals(boardcheck,refO)){
+                return true;
+            }
+        }
+        return false;  
+    }
+   
+    public void mouseEntered(MouseEvent e) {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    public void mouseExited(MouseEvent e) {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    public void mousePressed(MouseEvent e) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void mouseReleased(MouseEvent e) {
+        // TODO Auto-generated method stub
+        
     }
 }
